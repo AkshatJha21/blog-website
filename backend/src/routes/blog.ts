@@ -3,8 +3,6 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { verify } from "hono/jwt";
 
-// delete post
-// error handling
 
 export const blogRouter = new Hono<{
     Bindings: {
@@ -19,7 +17,16 @@ export const blogRouter = new Hono<{
 blogRouter.use('/*', async (c, next) => {
     const authHeader = c.req.header('Authorization') || "";
 
-    const user = await verify(authHeader, c.env.JWT_SECRET);
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        c.status(403);
+        return c.json({
+            err: "Bearer token not found"
+        });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const user = await verify(token, c.env.JWT_SECRET);
 
     if (user) {
         //@ts-ignore
@@ -41,17 +48,26 @@ blogRouter.post('/', async (c) => {
     const payload = await c.req.json();
     const authorId = c.get("userId");
 
-    const blog = await prisma.post.create({
-        data: {
-            title: payload.title,
-            content: payload.content,
-            authorId: authorId
-        }
-    });
+    try {
+        const blog = await prisma.post.create({
+            data: {
+                title: payload.title,
+                content: payload.content,
+                authorId: authorId
+            }
+        });
 
-    return c.json({
-        id: blog.id
-    });
+        return c.json({
+            msg: "Blog post created",
+            id: blog.id
+        });
+    } catch (error) {
+        c.status(411);
+        return c.json({
+            err: "Blog post not created"
+        });
+    }
+
   })
 
 blogRouter.put('/', async (c) => {
@@ -61,19 +77,29 @@ blogRouter.put('/', async (c) => {
 
     const payload = await c.req.json();
 
-    const blog = await prisma.post.update({
-        where: {
-            id: payload.id
-        },
-        data: {
-            title: payload.title,
-            content: payload.content
-        }
-    });
+    try {
+        const blog = await prisma.post.update({
+            where: {
+                id: payload.id
+            },
+            data: {
+                title: payload.title,
+                content: payload.content
+            }
+        });
+    
+        return c.json({
+            msg: "Blog post updated",
+            id: blog.id
+        });
+    } catch (error) {
+        c.status(411);
+        return c.json({
+            err: "Blog post not updated"
+        });
+    }
 
-    return c.json({
-        id: blog.id
-    });
+    
 })
 
 blogRouter.get('/bulk', async (c) => {
@@ -95,15 +121,23 @@ blogRouter.get('/:id', async (c) => {
 
     const id = await c.req.param('id');
 
-    const post = await prisma.post.findUnique({
-        where: {
-            id
-        }
-    });
-
-    return c.json({
-        post
-    });
+    try {
+        const post = await prisma.post.findUnique({
+            where: {
+                id
+            }
+        });
+    
+        return c.json({
+            post
+        });
+    } catch (error) {
+        c.status(411);
+        return c.json({
+            err: "Blog post not found"
+        });
+    }
+    
 })
 
 blogRouter.delete('/delete', async (c) => {
@@ -125,6 +159,7 @@ blogRouter.delete('/delete', async (c) => {
             msg: "Post not found"
         })
     }
+
     const post = await prisma.post.delete({
         where: {
             id: payload.id
