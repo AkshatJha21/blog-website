@@ -1,7 +1,8 @@
 import { Hono } from 'hono'
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
-import { decode, sign, verify } from 'hono/jwt';
+import { sign, verify } from 'hono/jwt';
+import { genSalt, hash, compare } from "bcrypt-ts";
 
 const app = new Hono<{
   Bindings: {
@@ -45,12 +46,28 @@ app.post('/user/signup', async (c) => {
 
   const payload = await c.req.json();
 
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email: payload.email
+    }
+  });
+
+  if (existingUser) {
+    c.status(403);
+    return c.json({
+      err: "User already exists"
+    });
+  }
+
   try {
+    const salt = await genSalt(10);
+    const hashedPassword = await hash(payload.password, salt);
+
     const user = await prisma.user.create({
       data: {
         email: payload.email,
         name: payload.name,
-        password: payload.password
+        password: hashedPassword
       }
     });
 
@@ -88,11 +105,20 @@ app.post('/user/signin', async (c) => {
     });
   }
 
-  const token = await sign({ id: user.id }, c.env.JWT_SECRET);
-  return c.json({
-    msg: "User sign in successful",
-    jwt: token
-  });
+  const validPassword = await compare(payload.password, user.password);
+
+  if (!validPassword) {
+    c.status(403);
+    return c.json({
+      err: "Incorrect password"
+    }); 
+  } else {
+    const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+    return c.json({
+      msg: "User sign in successful",
+      jwt: token
+    });
+  }
 })
 
 app.post('/blog', (c) => {

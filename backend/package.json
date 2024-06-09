@@ -6,6 +6,8 @@
   "dependencies": {
     "@prisma/client": "^5.15.0",
     "@prisma/extension-accelerate": "^1.1.0",
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt-ts": "^5.0.2",
     "hono": "^4.4.4",
     "prisma": "^5.15.0"
   },
