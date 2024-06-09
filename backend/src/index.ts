@@ -7,8 +7,36 @@ const app = new Hono<{
   Bindings: {
     DATABASE_URL: string,
     JWT_SECRET: string
+  },
+  Variables: {
+    userId: string
   }
 }>().basePath('/api/v1');
+
+app.use('/blog/*', async (c, next) => {
+  const jwt = await c.req.header("Authorization");
+
+  if (!jwt) {
+    c.status(401);
+    return c.json({
+      err: "Unauthorized"
+    });
+  }
+
+  const token = jwt.split(' ')[1];
+
+  const payload = await verify(token, c.env.JWT_SECRET);
+
+  if (!payload) {
+    c.status(401);
+    return c.json({
+      err: "Unauthorized"
+    });
+  }
+
+  c.set('userId', payload.id);  
+  await next();
+});
 
 app.post('/user/signup', async (c) => {
   const prisma = new PrismaClient({
@@ -68,6 +96,7 @@ app.post('/user/signin', async (c) => {
 })
 
 app.post('/blog', (c) => {
+  console.log(c.get('userId'));
   return c.text('Publish blog')
 })
 
