@@ -2,34 +2,49 @@ import { Hono } from 'hono'
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
 
-const app = new Hono()
+const app = new Hono<{
+  Bindings: {
+    DATABASE_URL: string
+  }
+}>().basePath('/api/v1');
 
-app.post('/api/v1/user/signup', (c) => {
+app.post('/user/signup', async (c) => {
+  const payload = await c.req.json();
+
   const prisma = new PrismaClient({
-    datasourceUrl: env.DATABASE_URL,
-  }).$extends(withAccelerate())
-  return c.text('User Signup')
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  await prisma.user.create({
+    data: {
+      email: payload.email,
+      name: payload.name,
+      password: payload.password
+    }
+  });
+
+  return c.text('User Signup');
 })
 
-app.post('/api/v1/user/signin', (c) => {
+app.post('/user/signin', (c) => {
   return c.text('User Signin')
 })
 
-app.post('/api/v1/blog', (c) => {
+app.post('/blog', (c) => {
   return c.text('Publish blog')
 })
 
-app.put('/api/v1/blog', (c) => {
+app.put('/blog', (c) => {
   return c.text('Edit blog')
 })
 
-app.get('/api/v1/blog/:id', (c) => {
+app.get('/blog/:id', (c) => {
   const id = c.req.param('id');
   console.log(id);
   return c.text('Get blog')
 })
 
-app.get('/api/v1/blog/bulk', (c) => {
+app.get('/blog/bulk', (c) => {
   return c.text('Get all blogs')
 })
 
