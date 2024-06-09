@@ -26,9 +26,10 @@ app.post('/user/signup', async (c) => {
       }
     });
 
-    const token = sign({ id: user.id }, c.env.JWT_SECRET);
+    const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
     return c.json({
+      msg: "User signup successful",
       jwt: token
     });
   } catch (error) {
@@ -39,8 +40,31 @@ app.post('/user/signup', async (c) => {
   }
 })
 
-app.post('/user/signin', (c) => {
-  return c.text('User Signin')
+app.post('/user/signin', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const payload = await c.req.json();
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: payload.email
+    }
+  });
+  
+  if (!user) {
+    c.status(403);
+    return c.json({
+      err: "User not found"
+    });
+  }
+
+  const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+  return c.json({
+    msg: "User sign in successful",
+    jwt: token
+  });
 })
 
 app.post('/blog', (c) => {
