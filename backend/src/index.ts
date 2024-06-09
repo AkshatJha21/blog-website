@@ -1,29 +1,42 @@
 import { Hono } from 'hono'
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
+import { decode, sign, verify } from 'hono/jwt';
 
 const app = new Hono<{
   Bindings: {
-    DATABASE_URL: string
+    DATABASE_URL: string,
+    JWT_SECRET: string
   }
 }>().basePath('/api/v1');
 
 app.post('/user/signup', async (c) => {
-  const payload = await c.req.json();
-
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  await prisma.user.create({
-    data: {
-      email: payload.email,
-      name: payload.name,
-      password: payload.password
-    }
-  });
+  const payload = await c.req.json();
 
-  return c.text('User Signup');
+  try {
+    const user = await prisma.user.create({
+      data: {
+        email: payload.email,
+        name: payload.name,
+        password: payload.password
+      }
+    });
+
+    const token = sign({ id: user.id }, c.env.JWT_SECRET);
+
+    return c.json({
+      jwt: token
+    });
+  } catch (error) {
+    c.status(403);
+    return c.json({
+      err: "Error while signing up"
+    });
+  }
 })
 
 app.post('/user/signin', (c) => {
