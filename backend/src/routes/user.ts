@@ -1,3 +1,4 @@
+import { signupInput } from "@akshatjha21/medium-common";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { compare, genSalt, hash } from "bcrypt-ts";
@@ -17,6 +18,14 @@ userRouter.post('/signup', async (c) => {
     }).$extends(withAccelerate());
   
     const payload = await c.req.json();
+    const parsedPayload = signupInput.safeParse(payload);
+
+    if (!parsedPayload.success) {
+      c.status(411);
+      return c.json({
+        err: "Incorrect inputs"
+      });
+    }
   
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -63,6 +72,14 @@ userRouter.post('/signup', async (c) => {
     }).$extends(withAccelerate());
   
     const payload = await c.req.json();
+    const parsedPayload = signupInput.safeParse(payload);
+
+    if (!parsedPayload.success) {
+      c.status(411);
+      return c.json({
+        err: "Incorrect inputs"
+      });
+    }
   
     const user = await prisma.user.findUnique({
       where: {

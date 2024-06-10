@@ -1,3 +1,4 @@
+import { createBlog, deleteBlog, updateBlog } from "@akshatjha21/medium-common";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
@@ -54,6 +55,14 @@ blogRouter.post('/', async (c) => {
     }).$extends(withAccelerate());
         
     const payload = await c.req.json();
+    const parsedPayload = createBlog.safeParse(payload);
+
+    if (!parsedPayload.success) {
+      c.status(411);
+      return c.json({
+        err: "Incorrect inputs"
+      });
+    }
     const authorId = c.get("userId");
 
     try {
@@ -84,6 +93,14 @@ blogRouter.put('/', async (c) => {
     }).$extends(withAccelerate());
 
     const payload = await c.req.json();
+    const parsedPayload = updateBlog.safeParse(payload);
+
+    if (!parsedPayload.success) {
+      c.status(411);
+      return c.json({
+        err: "Incorrect inputs"
+      });
+    }
 
     try {
         const blog = await prisma.post.update({
@@ -154,6 +171,14 @@ blogRouter.delete('/delete', async (c) => {
     }).$extends(withAccelerate());
 
     const payload = await c.req.json();
+    const parsedPayload = deleteBlog.safeParse(payload);
+
+    if (!parsedPayload.success) {
+      c.status(411);
+      return c.json({
+        err: "Incorrect inputs"
+      });
+    }
 
     const checkId = await prisma.post.findUnique({
         where: {
