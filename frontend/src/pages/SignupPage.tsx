@@ -1,13 +1,15 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FormButton } from '../components/FormButton'
 import FormHeader from '../components/FormHeader'
 import { InputBox } from '../components/InputBox'
 import { useState } from 'react'
 import { SignupInput } from '@akshatjha21/medium-common'
 import axios from 'axios'
+import { BACKEND_URL } from '../config'
 
 export const SignupPage = () => {
 
+  const navigate = useNavigate();
   const [postInputs, setPostInputs] = useState<SignupInput>({
     name: "",
     email: "",
@@ -15,7 +17,13 @@ export const SignupPage = () => {
   });
 
   const handleSignup = async () => {
-    await axios.post("http://localhost")
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, postInputs);
+      localStorage.setItem("token", response.data.jwt);
+      navigate('/blog');
+    } catch (error) {
+      console.error("Failed to sign up: ", error);
+    }
   };
 
   return (
@@ -40,7 +48,7 @@ export const SignupPage = () => {
             password: e.target.value
           }))
         }}/>
-        <FormButton text="Sign Up" handleClick={() => {}}/>
+        <FormButton text="Sign Up" handleClick={handleSignup}/>
         <p className='text-neutral-500 my-4'>Already a user?&nbsp; 
           <Link to={'/login'}>
             <u>Login</u>
