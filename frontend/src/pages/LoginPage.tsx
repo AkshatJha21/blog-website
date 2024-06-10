@@ -1,16 +1,31 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FormButton } from '../components/FormButton'
 import FormHeader from '../components/FormHeader'
 import { InputBox } from '../components/InputBox'
 import { useState } from 'react'
 import { LoginInput } from '@akshatjha21/medium-common'
+import axios from 'axios'
+import { BACKEND_URL } from '../config'
 
 export const LoginPage = () => {
 
+  const navigate = useNavigate();
   const [postInputs, setPostInputs] = useState<LoginInput>({
     email: "",
     password: ""
   });
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, postInputs);
+      localStorage.setItem("token", response.data.jwt);
+      navigate('/blog');
+      console.log("log in success");
+      
+    } catch (error) {
+      console.error("Failed to login: ", error);
+    }
+  };
   
   return (
     <div className='h-[100vh] flex items-center'>
@@ -28,7 +43,7 @@ export const LoginPage = () => {
             password: e.target.value
           }))
         }}/>
-        <FormButton text="Login" handleClick={() => {}}/>
+        <FormButton text="Login" handleClick={handleLogin}/>
         <p className='text-neutral-500 my-4'>New here?&nbsp; 
           <Link to={'/signup'}>
             <u>Sign Up</u>
