@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 type InputType = "text" | "password" | "number" | "email";
 
