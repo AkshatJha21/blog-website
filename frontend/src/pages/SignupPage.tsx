@@ -19,7 +19,7 @@ export const SignupPage = () => {
         </p>
       </div>
       <div className='hidden w-1/2 md:flex flex-col justify-center bg-neutral-100 h-full px-12'>
-        <h2 className='font-bold text-3xl my-2'>"I love how easy it is to write and publish posts. I can publish new blogs within seconds"</h2>
+        <h2 className='font-bold text-3xl my-2'>"I love how easy it is to write and publish posts. I can publish new blogs within seconds."</h2>
         <p className='my-2 font-medium text-lg'>~ Chris Williamson</p>
         <p className='text-neutral-500 text-sm'>Author from Austin, Texas</p>
       </div>
