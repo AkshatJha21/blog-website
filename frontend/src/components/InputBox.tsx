@@ -13,7 +13,7 @@ export const InputBox = ({
 }: InputBoxProps) => {
   return (
     <div>
-        <input type={inputType} placeholder={placeholder}/>
+        <input className="border-2 border-neutral-300 rounded-sm" type={inputType} placeholder={placeholder}/>
     </div>
   )
 }
