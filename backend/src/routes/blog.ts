@@ -26,18 +26,26 @@ blogRouter.use('/*', async (c, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    const user = await verify(token, c.env.JWT_SECRET);
+    try {
+        const user = await verify(token, c.env.JWT_SECRET);
 
-    if (user) {
-        //@ts-ignore
-        c.set("userId", user.id);
-        await next();
-    } else {
-        c.status(403);
-        return c.json({
-            msg: "You are not logged in"
+        if (user) {
+            //@ts-ignore
+            c.set("userId", user.id);
+            await next();
+        } else {
+            c.status(403);
+            return c.json({
+                msg: "You are not logged in"
         })
     }
+    } catch (error) {
+        c.status(403);
+        return c.json({
+            err: "Invalid token: " + error  
+        });
+    }
+    
 })
 
 blogRouter.post('/', async (c) => {
