@@ -19,6 +19,6 @@ const BlogList = () => {
 // 2. following / followers (might need to make 1 or 2 new models in prisma)
 // 3. Add dropdown menu in navbar -> new post, published posts, drafts, logout
 // 4. Pagination(5 posts at a time)
-// 
+// 5. date of creation (sort: latest post first)
 
 export default BlogList
