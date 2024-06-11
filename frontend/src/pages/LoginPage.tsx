@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FormButton } from '../components/FormButton'
 import FormHeader from '../components/FormHeader'
 import { InputBox } from '../components/InputBox'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LoginInput } from '@akshatjha21/medium-common'
 import axios from 'axios'
 import { BACKEND_URL } from '../config'
@@ -14,6 +14,10 @@ export const LoginPage = () => {
     email: "",
     password: ""
   });
+
+  useEffect(() => {
+    
+  }, []);
 
   const handleLogin = async () => {
     try {
