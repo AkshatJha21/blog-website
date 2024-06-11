@@ -17,6 +17,8 @@ const BlogList = () => {
 // UPDATES REQUIRED:
 // 1. published / drafts (based on published true or false render accordingly no special changes required)
 // 2. following / followers (might need to make 1 or 2 new models in prisma)
+// 3. Add dropdown menu in navbar -> new post, published posts, drafts, logout
+// 4. Pagination(5 posts at a time)
 // 
 
 export default BlogList
