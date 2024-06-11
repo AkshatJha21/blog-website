@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FormButton } from '../components/FormButton'
 import FormHeader from '../components/FormHeader'
 import { InputBox } from '../components/InputBox'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SignupInput } from '@akshatjha21/medium-common'
 import axios from 'axios'
 import { BACKEND_URL } from '../config'
@@ -16,11 +16,35 @@ export const SignupPage = () => {
     password: ""
   });
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          navigate('/signup');
+          return;
+        }
+
+        await axios.get(`${BACKEND_URL}/api/v1/user/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        navigate('/');
+      } catch (error) {
+        console.error('Error finding authentication token: ', error);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
   const handleSignup = async () => {
     try {
       const response = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, postInputs);
       localStorage.setItem("token", response.data.jwt);
-      navigate('/blog');
+      navigate('/');
     } catch (error) {
       console.error("Failed to sign up: ", error);
     }

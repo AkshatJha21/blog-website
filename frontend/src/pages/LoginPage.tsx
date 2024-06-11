@@ -16,14 +16,34 @@ export const LoginPage = () => {
   });
 
   useEffect(() => {
-    
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        await axios.get(`${BACKEND_URL}/api/v1/user/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        navigate('/');
+      } catch (error) {
+        console.error('Error finding authentication token: ', error);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const handleLogin = async () => {
     try {
       const response = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, postInputs);
       localStorage.setItem("token", response.data.jwt);
-      navigate('/blog');
+      navigate('/');
       console.log("log in success");
       
     } catch (error) {
