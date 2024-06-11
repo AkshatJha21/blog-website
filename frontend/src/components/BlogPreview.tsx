@@ -1,9 +1,9 @@
 
-interface BlogPreviewProps {
-    title: string;
-    preview: string;
-    author: string;
-}
+// interface BlogPreviewProps {
+//     title: string;
+//     preview: string;
+//     author: string;
+// }
 
 export const BlogPreview = () => {
   return (
