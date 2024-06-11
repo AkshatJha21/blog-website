@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import { useEffect } from "react";
+import BlogList from "../components/BlogList";
 
 
 const HomePage = () => {
@@ -33,6 +34,12 @@ const HomePage = () => {
             primaryClick={() => {}}
             secondaryClick={() => {}}
         />
+        {/* 
+            -> Get all blogs and on clicking should redirect to that particular blog
+            -> also add filter for getting your blogs
+        */}
+
+        <BlogList />
     </div>
   )
 }
