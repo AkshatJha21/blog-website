@@ -147,6 +147,9 @@ blogRouter.get('/all', async (c) => {
             take: limit,
             orderBy: {
                 createdAt: 'desc'
+            },
+            include: {
+                author: true
             }
         });
 
