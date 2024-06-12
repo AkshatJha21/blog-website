@@ -54,9 +54,25 @@ const BlogList = () => {
             <BlogPreview key={blog.id} inital={blog.author.name[0]} title={blog.title} author={blog.author.name} preview={blog.content}/>
           )
         })}
-        <div className="flex mx-auto gap-x-2">
-          <button className="p-2 border disabled:text-neutral-200" disabled={page === 1} onClick={handlePrevious}>Previous</button>
-          <button className="p-2 border disabled:text-neutral-200" disabled={page === total} onClick={handleNext}>Next</button>
+        <div className="flex mx-auto my-2 text-sm border-2 rounded-sm">
+          <button 
+            className="p-2 disabled:text-neutral-300 flex items-center border-r" 
+            disabled={page === 1} 
+            onClick={handlePrevious}
+          >
+            <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m14 8-4 4 4 4"/>
+            </svg>
+          </button>
+          <button 
+          className="p-2 disabled:text-neutral-300 flex items-center border-r" 
+          disabled={page === total} 
+          onClick={handleNext}
+          >
+            <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10 16 4-4-4-4"/>
+            </svg>
+          </button>
         </div>
     </div>
   )
