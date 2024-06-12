@@ -85,6 +85,100 @@ userRouter.get('/me', async (c) => {
   }
 });
 
+userRouter.post('/me/follow/:id', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const userId = c.get("userId");
+  const followUserId = c.req.param('id');
+
+  try {
+    await prisma.follow.create({
+      data: {
+        followerId: userId,
+        followingId: followUserId
+      }
+    });
+
+    return c.json({
+      msg: "Successfully followed the user"
+    });
+  } catch (error) {
+    console.error('Error following the user: ', error);
+    c.status(411);
+    return c.json({
+      err: "Error following user"
+    });
+  }
+});
+
+userRouter.get('/me/followers', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const userId = c.get("userId");
+
+  try {
+    const followers = await prisma.follow.findMany({
+      where: {
+        followingId: userId
+      },
+      include: {
+        follower: true
+      }
+    });
+
+    return c.json({
+      followers: followers.map(follow => ({
+        id: follow.follower.id,
+        email: follow.follower.email,
+        name: follow.follower.name
+      }))
+    });
+  } catch (error) {
+    console.error('Error getting followers: ', error);
+    c.status(411);
+    return c.json({
+      err: "Error finding followers"
+    });
+  }
+});
+
+userRouter.get('/me/following', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const userId = c.get("userId");
+
+  try {
+    const following = await prisma.follow.findMany({
+      where: {
+        followerId: userId
+      },
+      include: {
+        following: true
+      }
+    });
+
+    return c.json({
+      following: following.map(follow => ({
+        id: follow.following.id,
+        email: follow.following.email,
+        name: follow.following.name
+      }))
+    });
+  } catch (error) {
+    console.error('Error getting following: ', error);
+    c.status(411);
+    return c.json({
+      err: "Error finding following"
+    });
+  }
+});
+
 userRouter.post('/signup', async (c) => {
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,

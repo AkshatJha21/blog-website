@@ -13,13 +13,28 @@ model User {
   name      String?
   password  String
   posts     Post[]
+  followers Follow[] @relation("followers")
+  following Follow[] @relation("following")
 }
 
 model Post {
-  id        String    @id @default(uuid())
+  id        Int    @id @default(autoincrement())
   title     String
   content   String
+  createdAt DateTime @default(now())
   published Boolean   @default(false)
   authorId  String
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Follow {
+  followerId String
+  followingId String
+
+  follower   User @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  following  User @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followerId], name: "follower_idx")
+  @@index([followingId], name: "following_idx")
 }
