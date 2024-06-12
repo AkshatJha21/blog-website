@@ -70,7 +70,8 @@ blogRouter.post('/', async (c) => {
             data: {
                 title: payload.title,
                 content: payload.content,
-                authorId: authorId
+                authorId: authorId,
+                published: true
             }
         });
 
@@ -109,7 +110,8 @@ blogRouter.put('/', async (c) => {
             },
             data: {
                 title: payload.title,
-                content: payload.content
+                content: payload.content,
+                published: true
             }
         });
     
@@ -127,16 +129,81 @@ blogRouter.put('/', async (c) => {
     
 })
 
-blogRouter.get('/bulk', async (c) => {
+blogRouter.get('/all', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const blogs = await prisma.post.findMany();
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = 5;
+    const skip = (page - 1) * limit;
 
-    return c.json({
-        blog: blogs
-    });
+    try {
+        const blogs = await prisma.post.findMany({
+            where: {
+                published: true
+            },
+            skip,
+            take: limit,
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        return c.json({
+            blogs
+        });
+    } catch (error) {
+        c.status(500);
+        return c.json({
+            err: "Error fetching blogs"
+        });
+    }
+})
+
+blogRouter.get('/following', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const userId = c.get("userId");
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = 5;
+    const skip = (page - 1) * limit;
+
+    try {
+        const follows = await prisma.follow.findMany({
+            where: {
+                followerId: userId
+            },
+            select: {
+                followingId: true
+            }
+        });
+
+        const followingIds = follows.map(follow => follow.followingId);
+
+        const blogs = await prisma.post.findMany({
+            where: {
+                authorId: { in: followingIds },
+                published: true
+            },
+            skip,
+            take: limit,
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        return c.json({
+            blogs
+        });
+    } catch (error) {
+        c.status(500);
+        return c.json({
+            err: "Error fetching blogs from following users"
+        });
+    }
 })
 
 blogRouter.get('/:id', async (c) => {
@@ -144,12 +211,13 @@ blogRouter.get('/:id', async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const id = await c.req.param('id');
+    const id = parseInt(c.req.param('id'));
 
     try {
         const post = await prisma.post.findUnique({
             where: {
-                id
+                id,
+                published: true
             }
         });
     
@@ -182,7 +250,7 @@ blogRouter.delete('/delete', async (c) => {
 
     const checkId = await prisma.post.findUnique({
         where: {
-            id: payload.id,
+            id: parseInt(payload.id),
         },
     })
 
@@ -195,7 +263,7 @@ blogRouter.delete('/delete', async (c) => {
 
     const post = await prisma.post.delete({
         where: {
-            id: payload.id
+            id: parseInt(payload.id)
         }
     });
 
