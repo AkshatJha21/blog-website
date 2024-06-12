@@ -55,6 +55,12 @@ const BlogList = () => {
     })
   }, [page, focus]);
 
+  const truncateString = (str: string, num: number) => {
+    if (str.length <= num) {
+      return str;
+    }
+    return str.slice(0, num) + "...";
+  };
 
   return (
     <div className="flex flex-col mx-auto h-[100vh]">
@@ -74,7 +80,7 @@ const BlogList = () => {
         </div>
         {blogs.map((blog) => {
           return (
-            <BlogPreview key={blog.id} inital={blog.author.name[0]} title={blog.title} author={blog.author.name} preview={blog.content}/>
+            <BlogPreview key={blog.id} inital={blog.author.name[0]} title={blog.title} author={blog.author.name} preview={truncateString(blog.content, 150)}/>
           )
         })}
         <div className="flex mx-auto mt-2 text-sm border-2 rounded-sm fixed bottom-2 right-2 bg-white">
