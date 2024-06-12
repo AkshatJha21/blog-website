@@ -20,5 +20,6 @@ const BlogList = () => {
 // 3. Add dropdown menu in navbar -> new post, published posts, drafts, logout
 // 4. Pagination(5 posts at a time)
 // 5. date of creation (sort: latest post first)
+// 6. change post id to number from string
 
 export default BlogList
