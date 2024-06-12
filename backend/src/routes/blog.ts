@@ -139,6 +139,13 @@ blogRouter.get('/all', async (c) => {
     const skip = (page - 1) * limit;
 
     try {
+        const totalPosts = await prisma.post.count({
+            where: {
+                published: true
+            }
+        });
+
+        const totalPages = Math.ceil(totalPosts / limit);
         const blogs = await prisma.post.findMany({
             where: {
                 published: true
@@ -154,7 +161,8 @@ blogRouter.get('/all', async (c) => {
         });
 
         return c.json({
-            blogs
+            blogs,
+            totalPages
         });
     } catch (error) {
         c.status(500);
@@ -175,6 +183,7 @@ blogRouter.get('/following', async (c) => {
     const skip = (page - 1) * limit;
 
     try {
+        
         const follows = await prisma.follow.findMany({
             where: {
                 followerId: userId
@@ -185,6 +194,15 @@ blogRouter.get('/following', async (c) => {
         });
 
         const followingIds = follows.map(follow => follow.followingId);
+
+        const totalPosts = await prisma.post.count({
+            where: {
+                authorId: { in: followingIds },
+                published: true
+            }
+        });
+
+        const totalPages = Math.ceil(totalPosts / limit);
 
         const blogs = await prisma.post.findMany({
             where: {
@@ -199,7 +217,8 @@ blogRouter.get('/following', async (c) => {
         });
 
         return c.json({
-            blogs
+            blogs,
+            totalPages
         });
     } catch (error) {
         c.status(500);
