@@ -80,7 +80,7 @@ const BlogList = () => {
         </div>
         {blogs.map((blog) => {
           return (
-            <BlogPreview key={blog.id} inital={blog.author.name[0]} title={blog.title} author={blog.author.name} preview={truncateString(blog.content, 150)}/>
+            <BlogPreview blogId={blog.id} key={blog.id} inital={blog.author.name[0]} title={blog.title} author={blog.author.name} preview={truncateString(blog.content, 150)}/>
           )
         })}
         <div className="flex mx-auto mt-2 text-sm border-2 rounded-sm fixed bottom-2 right-2 bg-white">
