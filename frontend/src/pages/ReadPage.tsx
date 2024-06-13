@@ -10,15 +10,14 @@ interface Author {
   }
   
   interface Blog {
-    id: number;
     title: string;
     content: string;
-    author: Author
+    author: string;
   }
 
 const ReadPage = () => {
     const { id } = useParams();
-    const [blog, setBlog] = useState<any>({});
+    const [blog, setBlog] = useState<{title: string, author: string, content: string}>({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -47,10 +46,13 @@ const ReadPage = () => {
             secondaryClick={() => {}}
         />
         <div className="w-[90%] flex flex-col mx-auto my-4">
-            <h2>{blog.title}</h2>
-            <div>{blog.author[0]}</div>
-            <p>{blog.author}</p>
-            <p>{blog.content}</p>
+            <h2 className="text-3xl font-bold mb-2">{blog.title}</h2>
+            <div className="flex justify-end items-center gap-x-2 my-2">
+                <p>Written by</p>
+                <div className="p-2 bg-neutral-200 text-sm rounded-full w-8 h-8 flex items-center justify-center">C</div>
+                <p className="font-medium">{blog.author}</p>
+            </div>
+            <p className="font-serif text-lg">{blog.content}</p>
         </div>
     </div>
   )
