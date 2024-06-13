@@ -6,7 +6,7 @@ import { BACKEND_URL } from "../config";
 
 const ReadPage = () => {
     const { id } = useParams();
-    const [blog, setBlog] = useState({});
+    const [blog, setBlog] = useState<any>({});
 
     useEffect(() => {
         const token = localStorage.getItem("token");
