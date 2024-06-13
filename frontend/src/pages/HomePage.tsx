@@ -30,8 +30,8 @@ const HomePage = () => {
             heading="TheBlog" 
             primaryBtn="New" 
             showPlus={true} 
-            secondaryBtn="Logout" 
-            primaryClick={() => {}}
+            secondaryBtn="U" 
+            primaryClick={() => navigate('/create')}
             secondaryClick={() => {}}
         />
         {/* 

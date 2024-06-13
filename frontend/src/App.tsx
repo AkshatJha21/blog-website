@@ -3,6 +3,7 @@ import { SignupPage } from './pages/SignupPage';
 import { LoginPage } from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import ReadPage from "./pages/ReadPage";
+import CreatePage from "./pages/CreatePage";
 
 function App() {
 
@@ -14,7 +15,7 @@ function App() {
           <Route path='/login' element={<LoginPage />}/>
           <Route path='/' element={<HomePage />}/>
           <Route path='/read/:id' element={<ReadPage />}/>
-          <Route path='/create'/>
+          <Route path='/create' element={<CreatePage />}/>
         </Routes>
       </BrowserRouter>
     </>
