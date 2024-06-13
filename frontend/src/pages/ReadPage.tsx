@@ -1,12 +1,25 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 
+interface Author {
+    id: string;
+    name: string;
+  }
+  
+  interface Blog {
+    id: number;
+    title: string;
+    content: string;
+    author: Author
+  }
+
 const ReadPage = () => {
     const { id } = useParams();
     const [blog, setBlog] = useState<any>({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -16,9 +29,10 @@ const ReadPage = () => {
                 Authorization: `Bearer ${token}`
             }
         }).then(response => {
-            setBlog(response.data.post);
+            setBlog(response.data.blog);
         }).catch(error => {
             console.error('Error fetching blog: ' + error);
+            navigate('/');
         });
     }, []);
 
@@ -32,9 +46,10 @@ const ReadPage = () => {
             primaryClick={() => {}}
             secondaryClick={() => {}}
         />
-        <div>
+        <div className="w-[90%] flex flex-col mx-auto my-4">
             <h2>{blog.title}</h2>
-            <p>{blog.authorId}</p>
+            <div>{blog.author[0]}</div>
+            <p>{blog.author}</p>
             <p>{blog.content}</p>
         </div>
     </div>

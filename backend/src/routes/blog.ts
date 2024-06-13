@@ -243,11 +243,18 @@ blogRouter.get('/:id', async (c) => {
             where: {
                 id,
                 published: true
+            },
+            include: {
+                author: true
             }
         });
     
         return c.json({
-            post
+            blog: {
+                title: post?.title,
+                author: post?.author.name,
+                content: post?.content
+            }
         });
     } catch (error) {
         c.status(411);
