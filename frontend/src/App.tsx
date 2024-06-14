@@ -5,12 +5,15 @@ import HomePage from "./pages/HomePage";
 import ReadPage from "./pages/ReadPage";
 import CreatePage from "./pages/CreatePage";
 import ProfilePage from "./pages/ProfilePage";
+import { UserProvider } from "./provider/userContext";
 
 function App() {
 
   return (
     <>
+    <UserProvider>
       <BrowserRouter>
+      <div>
         <Routes>
           <Route path='/signup' element={<SignupPage />}/>
           <Route path='/login' element={<LoginPage />}/>
@@ -19,7 +22,9 @@ function App() {
           <Route path='/create' element={<CreatePage />}/>
           <Route path='/profile' element={<ProfilePage />}/>
         </Routes>
+      </div>
       </BrowserRouter>
+      </UserProvider>
     </>
   )
 }

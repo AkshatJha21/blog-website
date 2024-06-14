@@ -1,7 +1,6 @@
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BACKEND_URL } from "../config";
+import { useUser } from "../provider/userContext";
 
 interface NavbarProps {
     primaryBtn: string;
@@ -9,11 +8,6 @@ interface NavbarProps {
     primaryClick: () => void;
 }
 
-interface User {
-    id: string;
-    name:  string;
-    email: string;
-}
 
 const Navbar = ({
     primaryBtn,
@@ -23,21 +17,7 @@ const Navbar = ({
     const navigate = useNavigate();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
-    const [user, setUser] = useState<User>({name: "", id: "", email: ""});
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-
-        axios.get(`${BACKEND_URL}/api/v1/user/me`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then(response => {
-            setUser(response.data.user);
-        }).catch(err => {
-            console.error("Error finding user: " + err);     
-        })
-    }), [];
+    const { user } = useUser();
 
     const handleHome = () => {
         navigate('/');
@@ -64,6 +44,9 @@ const Navbar = ({
             document.removeEventListener('mousedown', handleClickOutside);
         }
     }, [isMenuVisible]);
+
+    // MEMOIZE THIS COMPONENT TO AVOID RERENDERS
+    // PUT IN APP.TSX -> ONLY RENDERS ONCE AND PERSISTS THROUGHOUT THE APP
 
   return (
     <nav className="flex justify-between items-center mx-2">
@@ -118,4 +101,4 @@ const Navbar = ({
   )
 }
 
-export default Navbar
+export default memo(Navbar);
