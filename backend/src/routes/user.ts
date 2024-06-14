@@ -131,7 +131,7 @@ userRouter.get('/me/followers', async (c) => {
     });
 
     return c.json({
-      followers: followers.map(follow => ({
+      users: followers.map(follow => ({
         id: follow.follower.id,
         email: follow.follower.email,
         name: follow.follower.name
@@ -164,7 +164,7 @@ userRouter.get('/me/following', async (c) => {
     });
 
     return c.json({
-      following: following.map(follow => ({
+      users: following.map(follow => ({
         id: follow.following.id,
         email: follow.following.email,
         name: follow.following.name
