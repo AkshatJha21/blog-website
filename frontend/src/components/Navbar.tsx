@@ -83,6 +83,10 @@ const Navbar = ({
                     </div> 
                     {isMenuVisible && (
                         <div ref={menuRef} className="absolute bg-white right-0 mt-2 w-48 shadow-md border p-2 z-20 rounded-sm">
+                            <div className="flex flex-col justify-center text-center  py-2">
+                                <p className="font-medium">{user.name}</p>
+                                <p className="font-light text-sm">{user.email}</p>
+                            </div>
                             <ul>
                                 <li 
                                     className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer"
