@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "../config";
 
 interface NavbarProps {
     primaryBtn: string;
@@ -7,6 +9,12 @@ interface NavbarProps {
     secondaryBtn: string;
     primaryClick: () => void;
     secondaryClick: () => void;
+}
+
+interface User {
+    id: string;
+    name:  string;
+    email: string;
 }
 
 const Navbar = ({
@@ -17,6 +25,21 @@ const Navbar = ({
     const navigate = useNavigate();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const [user, setUser] = useState<User>({name: "", id: "", email: ""});
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        axios.get(`${BACKEND_URL}/api/v1/user/me`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(response => {
+            setUser(response.data.user);
+        }).catch(err => {
+            console.error("Error finding user: " + err);     
+        })
+    }), [];
 
     const handleHome = () => {
         navigate('/');
@@ -43,6 +66,7 @@ const Navbar = ({
             document.removeEventListener('mousedown', handleClickOutside);
         }
     }, [isMenuVisible]);
+
   return (
     <nav className="flex justify-between items-center mx-2">
             <h2 className="font-black text-xl sm:text-2xl p-4 cursor-pointer" onClick={handleHome}>TheBlog</h2>
@@ -56,17 +80,31 @@ const Navbar = ({
                     <p className="font-medium text-sm">{primaryBtn}</p>
                 </button>
                 <div className="relative">
-                    <div onClick={toggleMenu} className="bg-neutral-100 font-medium rounded-full h-10 w-10 p-1 flex items-center justify-center cursor-pointer hover:bg-neutral-200 hover:border-neutral-500 hover:text-black text-neutral-500 border-2 border-neutral-400 transition-all">U</div> 
+                    <div onClick={toggleMenu} className="bg-neutral-100 font-medium rounded-full h-10 w-10 p-1 flex items-center justify-center cursor-pointer hover:bg-neutral-200 hover:border-neutral-500 hover:text-black text-neutral-500 border-2 border-neutral-400 transition-all">
+                        {user.name[0]}    
+                    </div> 
                     {isMenuVisible && (
                         <div ref={menuRef} className="absolute bg-white right-0 mt-2 w-48 shadow-md border p-2 z-20 rounded-sm">
                             <ul>
-                                <li className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer">
+                                <li 
+                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer"
+                                    onClick={() => navigate('/profile')}
+                                >
                                     Profile
                                 </li>
-                                <li className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer">
+                                <li 
+                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer"
+                                    onClick={() => navigate('/posts')}
+                                >
                                     Posts
                                 </li>
-                                <li className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer">
+                                <li 
+                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer"
+                                    onClick={() => {
+                                        localStorage.removeItem('token');
+                                        navigate('/login');
+                                    }}
+                                >
                                     Logout
                                 </li>
                             </ul>
