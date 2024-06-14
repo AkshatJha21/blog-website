@@ -29,9 +29,7 @@ const HomePage = () => {
         <Navbar 
             primaryBtn="New" 
             showPlus={true} 
-            secondaryBtn="U" 
             primaryClick={() => navigate('/create')}
-            secondaryClick={() => {}}
         />
         <BlogList />
     </div>

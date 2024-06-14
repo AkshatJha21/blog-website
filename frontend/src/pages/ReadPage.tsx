@@ -35,9 +35,7 @@ const ReadPage = () => {
         <Navbar 
             primaryBtn="New" 
             showPlus={true} 
-            secondaryBtn="Logout" 
             primaryClick={() => navigate('/create')}
-            secondaryClick={() => {}}
         />
         <div className="w-[90%] flex flex-col mx-auto my-4">
             <h2 className="text-3xl font-bold mb-2">{blog.title}</h2>

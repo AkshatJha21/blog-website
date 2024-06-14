@@ -6,9 +6,7 @@ import { BACKEND_URL } from "../config";
 interface NavbarProps {
     primaryBtn: string;
     showPlus: boolean;
-    secondaryBtn: string;
     primaryClick: () => void;
-    secondaryClick: () => void;
 }
 
 interface User {

@@ -4,6 +4,7 @@ import { LoginPage } from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import ReadPage from "./pages/ReadPage";
 import CreatePage from "./pages/CreatePage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
           <Route path='/' element={<HomePage />}/>
           <Route path='/read/:id' element={<ReadPage />}/>
           <Route path='/create' element={<CreatePage />}/>
+          <Route path='/profile' element={<ProfilePage />}/>
         </Routes>
       </BrowserRouter>
     </>
