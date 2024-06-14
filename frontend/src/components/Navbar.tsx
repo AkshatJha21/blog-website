@@ -2,10 +2,13 @@ import { memo, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../provider/userContext";
 
+type Button = "New" | "Publish";
+
 interface NavbarProps {
-    primaryBtn: string;
+    primaryBtn: Button;
     showPlus: boolean;
     primaryClick: () => void;
+    publishedDisabled?: boolean;
 }
 
 
@@ -13,6 +16,7 @@ const Navbar = ({
     primaryBtn,
     showPlus,
     primaryClick,
+    publishedDisabled
 }: NavbarProps) => {
     const navigate = useNavigate();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -45,14 +49,15 @@ const Navbar = ({
         }
     }, [isMenuVisible]);
 
-    // MEMOIZE THIS COMPONENT TO AVOID RERENDERS
-    // PUT IN APP.TSX -> ONLY RENDERS ONCE AND PERSISTS THROUGHOUT THE APP
-
   return (
     <nav className="flex justify-between items-center mx-2">
             <h2 className="font-black text-xl sm:text-2xl p-4 cursor-pointer" onClick={handleHome}>TheBlog</h2>
             <div className="p-4 flex items-center space-x-4">
-                <button onClick={primaryClick} className="bg-black text-white py-2 px-4 rounded-sm flex justify-evenly items-center text-center hover:opacity-75 transition-all duration-200">
+                <button 
+                    disabled={publishedDisabled} 
+                    onClick={primaryClick} 
+                    className={`bg-black text-white py-2 px-4 rounded-sm flex justify-evenly items-center text-center hover:opacity-75 transition-all duration-200 ${publishedDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-black text-white hover:opacity-75 transition-all duration-200'}`}
+                >
                     {showPlus ? (
                         <svg className="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 12h14m-7 7V5"/>

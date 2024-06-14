@@ -30,15 +30,16 @@ const CreatePage = () => {
             console.error("Error publishing the blog: " + error);
         }
     };
+
+    const isNotFilled = !blogInputs.title || !blogInputs.content;
+
   return (
     <div>
         <Navbar 
-            heading="TheBlog" 
             primaryBtn="Publish" 
             showPlus={false} 
-            secondaryBtn="U" 
             primaryClick={() => handlePublish()}
-            secondaryClick={() => {}}
+            publishedDisabled={isNotFilled}
         />
         <div className="flex flex-col w-[90%] mx-auto justify-start my-4 p-4">
             <input 
