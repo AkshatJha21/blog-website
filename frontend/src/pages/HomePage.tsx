@@ -27,17 +27,12 @@ const HomePage = () => {
   return (
     <div>
         <Navbar 
-            heading="TheBlog" 
             primaryBtn="New" 
             showPlus={true} 
             secondaryBtn="U" 
             primaryClick={() => navigate('/create')}
             secondaryClick={() => {}}
         />
-        {/* 
-            -> Get all blogs and on clicking should redirect to that particular blog
-            -> also add filter for getting your blogs
-        */}
         <BlogList />
     </div>
   )

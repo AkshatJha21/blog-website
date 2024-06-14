@@ -38,7 +38,6 @@ const ReadPage = () => {
   return (
     <div>
         <Navbar 
-            heading="TheBlog" 
             primaryBtn="New" 
             showPlus={true} 
             secondaryBtn="Logout" 
