@@ -3,11 +3,6 @@ import Navbar from "../components/Navbar"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
-
-interface Author {
-    id: string;
-    name: string;
-  }
   
   interface Blog {
     title: string;
@@ -17,7 +12,7 @@ interface Author {
 
 const ReadPage = () => {
     const { id } = useParams();
-    const [blog, setBlog] = useState<{title: string, author: string, content: string}>({});
+    const [blog, setBlog] = useState<Blog>({title: "", content: "", author: ""});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,7 +43,9 @@ const ReadPage = () => {
             <h2 className="text-3xl font-bold mb-2">{blog.title}</h2>
             <div className="flex justify-end items-center gap-x-2 my-2">
                 <p>Written by</p>
-                <div className="p-2 bg-neutral-200 text-sm rounded-full w-8 h-8 flex items-center justify-center">C</div>
+                <div className="p-2 bg-neutral-200 text-sm rounded-full w-8 h-8 flex items-center justify-center">
+                    {blog.author[0]}
+                </div>
                 <p className="font-medium">{blog.author}</p>
             </div>
             <p className="font-serif text-lg">{blog.content}</p>
