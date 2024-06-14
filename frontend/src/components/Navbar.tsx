@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
@@ -16,6 +16,7 @@ const Navbar = ({
 }: NavbarProps) => {
     const navigate = useNavigate();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     const handleHome = () => {
         navigate('/');
@@ -24,6 +25,24 @@ const Navbar = ({
     const toggleMenu = () => {
         setIsMenuVisible(prev => !prev);
     }
+
+    const handleClickOutside = (e: MouseEvent) => {
+        if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+            setIsMenuVisible(false);
+        }
+    }
+
+    useEffect(() => {
+        if (isMenuVisible) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isMenuVisible]);
   return (
     <nav className="flex justify-between items-center mx-2">
             <h2 className="font-black text-xl sm:text-2xl p-4 cursor-pointer" onClick={handleHome}>TheBlog</h2>
@@ -39,7 +58,7 @@ const Navbar = ({
                 <div className="relative">
                     <div onClick={toggleMenu} className="bg-neutral-100 font-medium rounded-full h-10 w-10 p-1 flex items-center justify-center cursor-pointer hover:bg-neutral-200 hover:border-neutral-500 hover:text-black text-neutral-500 border-2 border-neutral-400 transition-all">U</div> 
                     {isMenuVisible && (
-                        <div className="absolute bg-white right-0 mt-2 w-48 shadow-md border p-2 z-20 rounded-sm">
+                        <div ref={menuRef} className="absolute bg-white right-0 mt-2 w-48 shadow-md border p-2 z-20 rounded-sm">
                             <ul>
                                 <li className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer">
                                     Profile
