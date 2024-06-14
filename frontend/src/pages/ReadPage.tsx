@@ -36,7 +36,7 @@ const ReadPage = () => {
             primaryBtn="New" 
             showPlus={true} 
             secondaryBtn="Logout" 
-            primaryClick={() => {}}
+            primaryClick={() => navigate('/create')}
             secondaryClick={() => {}}
         />
         <div className="w-[90%] flex flex-col mx-auto my-4">
