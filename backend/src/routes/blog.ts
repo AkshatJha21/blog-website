@@ -251,6 +251,7 @@ blogRouter.get('/:id', async (c) => {
     
         return c.json({
             blog: {
+                authorId: post?.authorId,
                 title: post?.title,
                 author: post?.author.name,
                 content: post?.content

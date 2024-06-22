@@ -179,6 +179,62 @@ userRouter.get('/me/following', async (c) => {
   }
 });
 
+userRouter.delete('/me/unfollow/:id', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const userId = c.get('userId');
+  const unfollowUserId = c.req.param('id');
+
+  try {
+    await prisma.follow.deleteMany({
+      where: {
+        followerId: userId,
+        followingId: unfollowUserId
+      }
+    });
+
+    return c.json({
+      msg: "Successfully unfollowed the user"
+    });
+  } catch (error) {
+    console.error("Error unfollowing the user: " + error);
+    c.status(411);
+    return c.json({
+      err: "Error unfollowing user"
+    });
+  }
+});
+
+userRouter.delete('/me/remove-follower/:id', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const userId = c.get('userId');
+  const followerUserId = c.req.param('id');
+
+  try {
+    await prisma.follow.deleteMany({
+      where: {
+        followerId: followerUserId,
+        followingId: userId
+      }
+    });
+
+    return c.json({
+      msg: "Successfully removed the follower"
+    });
+  } catch (error) {
+    console.error("Error removing follower: " + error);
+    c.status(411);
+    return c.json({
+      err: "Error removing follower"
+    });
+  }
+});
+
 userRouter.post('/signup', async (c) => {
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,

@@ -8,13 +8,15 @@ import { BACKEND_URL } from "../config";
     title: string;
     content: string;
     author: string;
+    authorId: string;
   }
 
 const ReadPage = () => {
     const { id } = useParams();
-    const [blog, setBlog] = useState<Blog>({title: "", content: "", author: ""});
+    const [blog, setBlog] = useState<Blog>({title: "", content: "", author: "", authorId: ""});
     const [isLoading, setIsLoading] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
@@ -27,6 +29,7 @@ const ReadPage = () => {
             }
         }).then(response => {
             setBlog(response.data.blog);
+            checkFollowingStatus(response.data.blog.authorId, token);
             setIsLoading(false);
         }).catch(error => {
             console.error('Error fetching blog: ' + error);
@@ -34,6 +37,21 @@ const ReadPage = () => {
             navigate('/');
         });
     }, []);
+
+    const checkFollowingStatus = async (authorId: string, token: string | null) => {
+        try {
+            const response = await axios.get(`${BACKEND_URL}/api/v1/user/me/following`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const followingList = response.data.users;
+            const isFollowing = followingList.some((user: { id: string }) => user.id === authorId);
+            setIsFollowing(isFollowing);
+        } catch (error) {
+            console.error('Error checking following status: ' + error);
+        }
+    }
 
     const handleButtonClick = () => {
         setIsMenuOpen(p => !p);
@@ -57,7 +75,27 @@ const ReadPage = () => {
         }
     }, [isMenuOpen]);
 
-    const handleMenuClick = () => {
+    const handleMenuClick = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            if (isFollowing) {
+                await axios.delete(`${BACKEND_URL}/api/v1/user/me/unfollow/${blog.authorId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            } else {
+                await axios.post(`${BACKEND_URL}/api/v1/user/me/follow/${blog.authorId}`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            }
+            setIsFollowing(!isFollowing);
+            setIsMenuOpen(false);
+        } catch (error) {
+            console.error('Error unfollowing author: ' + error);
+        }
         setIsMenuOpen(false);
     }
 
@@ -83,7 +121,9 @@ const ReadPage = () => {
                     </div>
                         {isMenuOpen && (
                             <div ref={menuRef} onClick={handleMenuClick} className="w-40 absolute top-full z-10 bg-white shadow-md p-1 border rounded-md">
-                                <div className="p-2 hover:cursor-pointer hover:bg-neutral-100 rounded-md">Follow Author</div>
+                                <div className="p-2 hover:cursor-pointer hover:bg-neutral-100 rounded-md">
+                                    {isFollowing ? 'Unfollow Author' : 'Follow Author'}
+                                </div>
                             </div>
                         )}
                 </div>
