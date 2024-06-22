@@ -6,6 +6,7 @@ import ReadPage from "./pages/ReadPage";
 import CreatePage from "./pages/CreatePage";
 import ProfilePage from "./pages/ProfilePage";
 import { UserProvider } from "./provider/userContext";
+import UserPostsPage from "./pages/UserPostsPage";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route path='/read/:id' element={<ReadPage />}/>
           <Route path='/create' element={<CreatePage />}/>
           <Route path='/profile' element={<ProfilePage />}/>
+          <Route path='/posts' element={<UserPostsPage />}/>
         </Routes>
       </div>
       </BrowserRouter>
