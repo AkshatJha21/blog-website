@@ -3,6 +3,7 @@ import { BlogPreview } from "./BlogPreview"
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 import Loader from "./Loader";
+import NoResult from "./NoResult";
 
 interface Author {
   id: string;
@@ -86,7 +87,7 @@ const BlogList = () => {
         {loading ? (
           <Loader />
         ) : focus === 'Following' && blogs.length === 0 ? (
-          <div>No Blogs Found</div>
+          <NoResult />
         ) : (
           blogs.map((blog) => {
             return (
