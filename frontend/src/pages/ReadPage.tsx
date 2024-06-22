@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom"
 import Navbar from "../components/Navbar"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
   
@@ -14,6 +14,8 @@ const ReadPage = () => {
     const { id } = useParams();
     const [blog, setBlog] = useState<Blog>({title: "", content: "", author: ""});
     const [isLoading, setIsLoading] = useState(true);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,6 +35,32 @@ const ReadPage = () => {
         });
     }, []);
 
+    const handleButtonClick = () => {
+        setIsMenuOpen(p => !p);
+    }
+
+    const handleClickOutside = (e: MouseEvent) => {
+        if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+            setIsMenuOpen(false);
+        }
+    }
+
+    useEffect(() => {
+        if (isMenuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isMenuOpen]);
+
+    const handleMenuClick = () => {
+        setIsMenuOpen(false);
+    }
+
   return (
     <div>
         <Navbar 
@@ -43,14 +71,21 @@ const ReadPage = () => {
         {isLoading ? (
             <ReadPageSkeleton />
         ): (
-            <div className="w-[90%] flex flex-col mx-auto my-4">
+            <div className="w-[90%] flex flex-col mx-auto my-4 relative">
                 <h2 className="text-3xl font-bold mb-2">{blog.title}</h2>
-                <div className="flex justify-end items-center gap-x-2 mt-2 mb-4">
-                    <p className="text-sm font-medium text-neutral-600 mr-2">Written by</p>
-                    <div className="p-2 bg-neutral-200 text-sm rounded-full w-8 h-8 flex items-center justify-center">
-                        {blog.author[0]}
+                <div className="flex justify-end items-center gap-x-2 mt-2 mb-4 relative">
+                    <p className="text-sm font-medium text-neutral-600">Written by</p>
+                    <div onClick={handleButtonClick} className="flex justify-end items-center gap-x-2 p-1 hover:bg-neutral-100 rounded-full hover:cursor-pointer transition">
+                        <div className="p-2 bg-neutral-200 text-sm rounded-full w-8 h-8 flex items-center justify-center">
+                            {blog.author[0]}
+                        </div>
+                        <p className="font-medium">{blog.author}</p>
                     </div>
-                    <p className="font-medium">{blog.author}</p>
+                        {isMenuOpen && (
+                            <div ref={menuRef} onClick={handleMenuClick} className="w-40 absolute top-full z-10 bg-white shadow-md p-1 border rounded-md">
+                                <div className="p-2 hover:cursor-pointer hover:bg-neutral-100 rounded-md">Follow Author</div>
+                            </div>
+                        )}
                 </div>
                 <p className="font-serif text-lg">{blog.content}</p>
             </div>
