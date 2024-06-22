@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { BlogPreview } from "./BlogPreview"
 import axios from "axios";
 import { BACKEND_URL } from "../config";
+import Loader from "./Loader";
 
 interface Author {
   id: string;
@@ -20,6 +21,7 @@ const BlogList = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [focus, setFocus] = useState("All");
+  const [loading, setLoading] = useState(true);
 
   const handlePrevious = () => {
       setPage(page => page - 1);
@@ -36,6 +38,7 @@ const BlogList = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    setLoading(true);
 
     let route = "/api/v1/blog/all";
 
@@ -50,8 +53,10 @@ const BlogList = () => {
     }).then(response => {
       setBlogs(response.data.blogs);
       setTotal(response.data.totalPages);
+      setLoading(false);
     }).catch(error => {
       console.error('Error fetching blogs: ', error);
+      setLoading(false);
     })
   }, [page, focus]);
 
@@ -78,11 +83,17 @@ const BlogList = () => {
               Following
             </button>
         </div>
-        {blogs.map((blog) => {
-          return (
-            <BlogPreview blogId={blog.id} key={blog.id} inital={blog.author.name[0]} title={blog.title} author={blog.author.name} preview={truncateString(blog.content, 150)}/>
-          )
-        })}
+        {loading ? (
+          <Loader />
+        ) : focus === 'Following' && blogs.length === 0 ? (
+          <div>No Blogs Found</div>
+        ) : (
+          blogs.map((blog) => {
+            return (
+              <BlogPreview blogId={blog.id} key={blog.id} inital={blog.author.name[0]} title={blog.title} author={blog.author.name} preview={truncateString(blog.content, 150)}/>
+            )
+          })
+        )}
         <div className="flex mx-auto mt-2 text-sm border-2 rounded-sm fixed bottom-2 right-2 bg-white">
           <button 
             className="p-2 disabled:text-neutral-300 flex items-center border-r" 
