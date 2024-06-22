@@ -93,6 +93,13 @@ userRouter.post('/me/follow/:id', async (c) => {
   const userId = c.get("userId");
   const followUserId = c.req.param('id');
 
+  if (followUserId === userId) {
+    c.status(411);
+    return c.json({
+      err: "Cannot follow yourself"
+    });
+  }
+
   try {
     await prisma.follow.create({
       data: {

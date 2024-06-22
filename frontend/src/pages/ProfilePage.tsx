@@ -24,48 +24,73 @@ const ProfilePage = () => {
         setFocus(button);
     };
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        setLoading(true);
+    const fetchCounts = async (token: string | null) => {
+        try {
+            const followerResponse = await axios.get(`${BACKEND_URL}/api/v1/user/me/followers`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setFollowers(followerResponse.data.users.length);
 
-        axios.get(`${BACKEND_URL}/api/v1/user/me/followers`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then(response => {
-            setFollowers(response.data.users.length);
-        }).catch(error => {
-            console.error('Error fetching follower count: ' + error);
-        });
-
-        axios.get(`${BACKEND_URL}/api/v1/user/me/following`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then(response => {
-            setFollowing(response.data.users.length);
-        }).catch(error => {
-            console.error('Error fetching following count: ' + error);
-        });
-
-        let route = '/followers';
-
-        if (focus === 'Following') {
-            route = '/following';
+            const followingResponse = await axios.get(`${BACKEND_URL}/api/v1/user/me/following`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setFollowing(followingResponse.data.users.length);
+        } catch (error) {
+            console.error('Error fetching followers/following count: ' + error);
         }
+    }
 
-        axios.get(`${BACKEND_URL}/api/v1/user/me${route}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then(response => {
+    const fetchUsers = async (token: string | null, route: string) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${BACKEND_URL}/api/v1/user/me${route}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             setUsers(response.data.users);
             setLoading(false);
-        }).catch(err => {
-            console.error("Error fetching users: " + err);
+        } catch (error) {
+            console.error('Error fetching users: ' + error);
             setLoading(false);
-        });
+        }
+    }
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        fetchCounts(token);
+
+        const route = focus === 'Following' ? '/following' : '/followers';
+        fetchUsers(token, route);
     }, [focus]);
+
+    const handleButtonClick = async (userId: string) => {
+        const token = localStorage.getItem('token');
+        try {
+            if (focus === 'Following') {
+                await axios.delete(`${BACKEND_URL}/api/v1/user/me/unfollow/${userId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            } else {
+                await axios.delete(`${BACKEND_URL}/api/v1/user/me/remove-follower/${userId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            }
+            fetchUsers(token, focus === 'Following' ? '/following' : '/followers');
+            fetchCounts(token);
+        } catch (error) {
+            console.error(`Error ${focus === 'Following' ? 'unfollowing' : 'removing follower'}: ` + error);
+        }
+    };
+
   return (
     <div>
         <Navbar 
@@ -97,12 +122,15 @@ const ProfilePage = () => {
         ) : (
             users.map((user) => {
                 return (
-                    <div key={user.id} className="mx-auto flex flex-col py-2 px-4 border-b">
-                        <div className="flex items-center gap-x-2">
-                            <div className="flex bg-neutral-200 h-8 w-8 text-sm items-center rounded-full p-2 justify-center">{user.name[0]}</div>
-                            <h2 className="font-medium">{user.name}</h2>
+                    <div key={user.id} className="w-[70%] lg:w-[40%] mx-auto justify-between flex py-2 px-4 border-b">
+                        <div>
+                            <div className="flex items-center gap-x-2">
+                                <div className="flex bg-neutral-200 h-8 w-8 text-sm items-center rounded-full p-2 justify-center">{user.name[0]}</div>
+                                <h2 className="font-medium">{user.name}</h2>
+                            </div>
+                            <p className="text-neutral-500 font-light">{user.email}</p>
                         </div>
-                        <p className="text-neutral-500 font-light">{user.email}</p>
+                        <button onClick={() => handleButtonClick(user.id)} className="bg-black text-white h-8 p-2 flex items-center rounded-sm text-sm font-medium hover:opacity-75 transition my-auto">{focus === 'Following' ? 'Unfollow' : 'Remove'}</button>
                     </div>
                 )
             })
