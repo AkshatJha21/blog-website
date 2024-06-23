@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
@@ -13,19 +13,15 @@ interface Post {
     authorId: string;
 }
 
-interface User {
-    id: string;
-    email: string;
-    name: string;
-}
-
 const UserPostsPage = () => {
     const navigate = useNavigate();
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<User | null>(null);
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(1);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [selectedPost, setSelectedPost] = useState<string | null>(null);
     
     const handlePrevious = () => {
         setPage(page => page - 1);
@@ -36,17 +32,11 @@ const UserPostsPage = () => {
     }
 
     useEffect(() => {
-        const fetchUserAndPosts = async () => {
+        const fetchPosts = async () => {
             const token = localStorage.getItem('token');
             setLoading(true);
 
             try {
-                const userResponse = await axios.get(`${BACKEND_URL}/api/v1/user/me`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setUser(userResponse.data.user);
 
                 const postsResponse = await axios.get(`${BACKEND_URL}/api/v1/blog/my-posts?page=${page}`, {
                     headers: {
@@ -62,20 +52,41 @@ const UserPostsPage = () => {
             }
         };
 
-        fetchUserAndPosts();
+        fetchPosts();
     }, [page]);
-
-    const handlePageChange = (newPage: number) => {
-        if (newPage >= 1 && newPage <= total) {
-            setPage(newPage);
-        }
-    };
 
     const truncateString = (str: string, num: number) => {
         if (str.length <= num) {
           return str;
         }
         return str.slice(0, num) + "...";
+    };
+
+    const handleButtonClick = (postId: string) => {
+        setSelectedPost(postId);
+        setIsMenuOpen(p => !p);
+    }
+
+    const handleClickOutside = (e: MouseEvent) => {
+        if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+            setIsMenuOpen(false);
+        }
+    }
+
+    useEffect(() => {
+        if (isMenuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isMenuOpen]);
+
+    const handleMenuClick = () => {
+        setIsMenuOpen(false);
     };
 
     return (
@@ -92,18 +103,24 @@ const UserPostsPage = () => {
                     <NoResult />
                 ) : (
                     posts.map((post) => (
-                        <div key={post.id} className="w-[70%] lg:w-[40%] mx-auto justify-between flex py-2 px-4 border-b">
+                        <div key={post.id} className="w-[70%] lg:w-[40%] mx-auto justify-between flex py-2 px-4 border-b relative">
                             <div>
-                                <h2 className="font-medium">{post.title}</h2>
-                                <p className="text-neutral-500 font-light">{post.content}</p>
+                                <h2 className="font-bold text-xl my-2">{post.title}</h2>
+                                <p className="font-serif">{truncateString(post.content, 150)}</p>
                             </div>
+                            <button className="hover:bg-neutral-100 transition rounded-full h-6 w-6 my-auto" onClick={() => handleButtonClick(post.id)}>
+                                <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M6 12h.01m6 0h.01m5.99 0h.01"/>
+                                </svg>
+                            </button>
+                            {isMenuOpen && selectedPost === post.id && (
+                                <div ref={menuRef} onClick={handleMenuClick} className="w-40 absolute right-0 top-12 z-10 bg-white shadow-md p-1 border rounded-md">
+                                    <div className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Edit</div>
+                                    <div className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Delete</div>
+                                </div>
+                            )}
                         </div>
                     ))
-                    // posts.filter((post) => post.authorId === user?.id).map((post) => (
-                        
-                    // ))
-                    // posts.map((post) => (
-                    // ))
                 )}
             </div>
             <div className="flex mx-auto mt-2 text-sm border-2 rounded-sm fixed bottom-2 right-2 bg-white">
