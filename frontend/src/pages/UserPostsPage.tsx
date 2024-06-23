@@ -89,6 +89,12 @@ const UserPostsPage = () => {
         setIsMenuOpen(false);
     };
 
+    const handleEdit = () => {
+        if (selectedPost) {
+            navigate(`/edit/${selectedPost}`);
+        }
+    }
+
     return (
         <div>
             <Navbar 
@@ -115,7 +121,7 @@ const UserPostsPage = () => {
                             </button>
                             {isMenuOpen && selectedPost === post.id && (
                                 <div ref={menuRef} onClick={handleMenuClick} className="w-40 absolute right-0 top-12 z-10 bg-white shadow-md p-1 border rounded-md">
-                                    <div className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Edit</div>
+                                    <div onClick={handleEdit} className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Edit</div>
                                     <div className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Delete</div>
                                 </div>
                             )}

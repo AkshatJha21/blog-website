@@ -7,6 +7,7 @@ import CreatePage from "./pages/CreatePage";
 import ProfilePage from "./pages/ProfilePage";
 import { UserProvider } from "./provider/userContext";
 import UserPostsPage from "./pages/UserPostsPage";
+import EditPage from "./pages/EditPage";
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
           <Route path='/create' element={<CreatePage />}/>
           <Route path='/profile' element={<ProfilePage />}/>
           <Route path='/posts' element={<UserPostsPage />}/>
+          <Route path='/edit/:id' element={<EditPage />}/>
         </Routes>
       </div>
       </BrowserRouter>

@@ -106,7 +106,7 @@ blogRouter.put('/', async (c) => {
     try {
         const blog = await prisma.post.update({
             where: {
-                id: payload.id
+                id: parseInt(payload.id)
             },
             data: {
                 title: payload.title,
@@ -301,7 +301,8 @@ blogRouter.get('/:id', async (c) => {
                 title: post?.title,
                 author: post?.author.name,
                 content: post?.content
-            }
+            },
+            id
         });
     } catch (error) {
         c.status(411);
