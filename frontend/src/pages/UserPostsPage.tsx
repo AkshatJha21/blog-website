@@ -43,6 +43,8 @@ const UserPostsPage = () => {
                         Authorization: `Bearer ${token}`
                     }
                 });
+                console.log(postsResponse.data);
+                
                 setPosts(postsResponse.data.blogs);
                 setTotal(postsResponse.data.totalPages);
                 setLoading(false);
@@ -95,6 +97,28 @@ const UserPostsPage = () => {
         }
     }
 
+    const handleDelete = async () => {
+        if (selectedPost) {
+            const token = localStorage.getItem('token');
+
+            try {
+                await axios.delete(`${BACKEND_URL}/api/v1/blog/delete`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    data: {
+                        id: selectedPost.toString()
+                    }
+                });
+                
+                setPosts(posts.filter(post => post.id !== selectedPost));
+                setIsMenuOpen(false);
+            } catch (error) {
+                console.error("Error deleting blog: " + error);
+            }
+        }
+    }
+
     return (
         <div>
             <Navbar 
@@ -122,7 +146,7 @@ const UserPostsPage = () => {
                             {isMenuOpen && selectedPost === post.id && (
                                 <div ref={menuRef} onClick={handleMenuClick} className="w-40 absolute right-0 top-12 z-10 bg-white shadow-md p-1 border rounded-md">
                                     <div onClick={handleEdit} className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Edit</div>
-                                    <div className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Delete</div>
+                                    <div onClick={handleDelete} className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Delete</div>
                                 </div>
                             )}
                         </div>
