@@ -43,8 +43,6 @@ const UserPostsPage = () => {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                console.log(postsResponse.data);
-                
                 setPosts(postsResponse.data.blogs);
                 setTotal(postsResponse.data.totalPages);
                 setLoading(false);
@@ -133,20 +131,30 @@ const UserPostsPage = () => {
                     <NoResult />
                 ) : (
                     posts.map((post) => (
-                        <div key={post.id} className="w-[70%] lg:w-[40%] mx-auto justify-between flex py-2 px-4 border-b relative">
+                        <div key={post.id} className="w-[70%] lg:w-[60%] mx-auto justify-between flex py-2 px-4 border-b relative">
                             <div>
                                 <h2 className="font-bold text-xl my-2">{post.title}</h2>
                                 <p className="font-serif">{truncateString(post.content, 150)}</p>
                             </div>
                             <button className="hover:bg-neutral-100 transition rounded-full h-6 w-6 my-auto" onClick={() => handleButtonClick(post.id)}>
                                 <svg className="w-6 h-6 " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M6 12h.01m6 0h.01m5.99 0h.01"/>
+                                    <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M6 12h.01m6 0h.01m5.99 0h.01"/>
                                 </svg>
                             </button>
                             {isMenuOpen && selectedPost === post.id && (
                                 <div ref={menuRef} onClick={handleMenuClick} className="w-40 absolute right-0 top-12 z-10 bg-white shadow-md p-1 border rounded-md">
-                                    <div onClick={handleEdit} className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Edit</div>
-                                    <div onClick={handleDelete} className="p-2 cursor-pointer hover:bg-neutral-100 rounded">Delete</div>
+                                    <div onClick={handleEdit} className="p-2 cursor-pointer hover:bg-neutral-100 rounded flex items-center transition">
+                                        <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28"/>
+                                        </svg>
+                                        Edit
+                                    </div>
+                                    <div onClick={handleDelete} className="p-2 cursor-pointer hover:bg-neutral-100 rounded flex items-center transition">
+                                        <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                                        </svg>
+                                        Delete
+                                    </div>
                                 </div>
                             )}
                         </div>

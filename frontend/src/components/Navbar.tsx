@@ -82,24 +82,34 @@ const Navbar = ({
                             </div>
                             <ul>
                                 <li 
-                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer"
+                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer flex items-center"
                                     onClick={() => navigate('/profile')}
                                 >
+                                    <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" strokeWidth="2" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                    </svg>
                                     Profile
                                 </li>
                                 <li 
-                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer"
+                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer flex items-center"
                                     onClick={() => navigate('/posts')}
                                 >
+                                    <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linejoin="round" strokeWidth="2" d="M10 3v4a1 1 0 0 1-1 1H5m14-4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"/>
+                                    </svg>
                                     Posts
                                 </li>
                                 <li 
-                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer"
+                                    className="p-2 hover:bg-neutral-100 rounded-sm transition-all cursor-pointer flex items-center"
                                     onClick={() => {
                                         localStorage.removeItem('token');
                                         navigate('/login');
                                     }}
                                 >
+                                    <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
+                                    </svg>
+
                                     Logout
                                 </li>
                             </ul>
