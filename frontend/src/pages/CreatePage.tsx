@@ -31,7 +31,7 @@ const CreatePage = () => {
         }
     };
 
-    const isNotFilled = !blogInputs.title || !blogInputs.content;
+    const isNotFilled = !blogInputs.title || !blogInputs.content || !blogInputs.content.trim() || !blogInputs.title.trim();
 
   return (
     <div>
