@@ -231,6 +231,52 @@ blogRouter.get('/following', async (c) => {
     }
 })
 
+blogRouter.get('/my-posts', async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const userId = c.get('userId');
+    const page = parseInt(c.req.query('page') || '1');
+    const limit = 5;
+    const skip = (page - 1) * limit;
+
+    try {
+        const totalPosts = await prisma.post.count({
+            where: {
+                authorId: userId,
+                published: true
+            }
+        });
+        
+        const totalPages = Math.ceil(totalPosts / limit);
+        const blogs = await prisma.post.findMany({
+            where: {
+                authorId: userId,
+                published: true
+            },
+            skip,
+            take: limit,
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                author: true
+            }
+        });
+
+        return c.json({
+            blogs,
+            totalPages
+        });
+    } catch (error) {
+        c.status(500);
+        return c.json({
+            err: "Error fetching user's blogs"
+        });
+    }
+})
+
 blogRouter.get('/:id', async (c) => {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,

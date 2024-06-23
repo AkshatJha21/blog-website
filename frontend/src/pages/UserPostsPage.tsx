@@ -25,7 +25,7 @@ const UserPostsPage = () => {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
     const [page, setPage] = useState(1);
-    const [total, setTotal] = useState(0);
+    const [total, setTotal] = useState(1);
     
     const handlePrevious = () => {
         setPage(page => page - 1);
@@ -48,15 +48,13 @@ const UserPostsPage = () => {
                 });
                 setUser(userResponse.data.user);
 
-                const postsResponse = await axios.get(`${BACKEND_URL}/api/v1/blog/all?page=${page}`, {
+                const postsResponse = await axios.get(`${BACKEND_URL}/api/v1/blog/my-posts?page=${page}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
                 setPosts(postsResponse.data.blogs);
                 setTotal(postsResponse.data.totalPages);
-                console.log(postsResponse.data.totalPages);
-                console.log(postsResponse.data.blogs);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching user details or posts: " + error);
@@ -65,7 +63,13 @@ const UserPostsPage = () => {
         };
 
         fetchUserAndPosts();
-    }, []);
+    }, [page]);
+
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 1 && newPage <= total) {
+            setPage(newPage);
+        }
+    };
 
     const truncateString = (str: string, num: number) => {
         if (str.length <= num) {
@@ -87,7 +91,7 @@ const UserPostsPage = () => {
                 ) : posts.length === 0 ? (
                     <NoResult />
                 ) : (
-                    posts.filter((post) => post.authorId === user?.id).map((post) => (
+                    posts.map((post) => (
                         <div key={post.id} className="w-[70%] lg:w-[40%] mx-auto justify-between flex py-2 px-4 border-b">
                             <div>
                                 <h2 className="font-medium">{post.title}</h2>
@@ -95,6 +99,9 @@ const UserPostsPage = () => {
                             </div>
                         </div>
                     ))
+                    // posts.filter((post) => post.authorId === user?.id).map((post) => (
+                        
+                    // ))
                     // posts.map((post) => (
                     // ))
                 )}
